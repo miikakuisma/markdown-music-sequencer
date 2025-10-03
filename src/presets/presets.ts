@@ -43,6 +43,11 @@ title: "Acid House"
 tempo: 128
 ---
 
+# Pattern
+Kick:  x...x...x...x...
+Bass:  1112111311121114
+HiHat: ..x...x...x...x.
+
 # Sounds
 Bass:
   waveform: sawtooth
@@ -58,12 +63,7 @@ Bass:
     1: c2
     2: d#2
     3: g2
-    4: a#3
-
-# Pattern
-Kick:  x...x...x...x...
-Bass:  1112111311121114
-HiHat: ..x...x...x...x.`,
+    4: a#3`,
 
   breakbeat: `---
 title: "Breakbeat"
@@ -83,6 +83,12 @@ title: "Plucked Keys"
 tempo: 95
 ---
 
+# Pattern
+Kick:  x.......x.......
+Snare: ....x.......x...
+HiHat: ..x...x...x...x.
+Keys:  1.....2.3.....4.
+
 # Sounds
 Keys:
   waveform: triangle
@@ -101,11 +107,46 @@ Keys:
     1: c4-e4-g4
     2: a3-c4-e4
     3: f3-a3-c4
-    4: g3-b3-d4
+    4: g3-b3-d4`,
+
+  customdrums: `---
+title: "Custom Drums"
+tempo: 120
+---
 
 # Pattern
-Kick:  x.......x.......
-Snare: ....x.......x...
-HiHat: ..x...x...x...x.
-Keys:  1.....2.3.....4.`
+Kick:  X...X...X...X...
+Snare: ....X.......X...
+HiHat: x.x.x.x.x.x.x.x.
+Clap:  ....x.......x...
+
+# Sounds
+Kick:
+  type: drum
+  pitch: 80
+  decay: 0.8
+  volume: 0.9
+
+Snare:
+  type: drum
+  tone: 150
+  filterCutoff: 2000
+  decay: 0.15
+  noiseMix: 0.7
+  volume: 0.7
+
+HiHat:
+  type: drum
+  filterCutoff: 9000
+  decay: 0.04
+  volume: 0.5
+
+Clap:
+  type: drum
+  filterCutoff: 2000
+  filterQ: 2
+  burstCount: 4
+  burstSpacing: 0.008
+  decay: 0.06
+  volume: 0.8`
 };

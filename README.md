@@ -12,16 +12,22 @@ A web-based music sequencer that lets you create beats and melodies using markdo
 - **Markdown-based notation** - Write music patterns in plain text
 - **Visual step sequencer** - See your patterns come to life
 - **Built-in synthesizers** - ADSR envelope, filters, and delay effects
-- **Drum synthesis** - Kick, snare, hi-hat, open hat, and clap
+- **Configurable drum synthesis** - Customize kick, snare, hi-hat, open hat, and clap parameters
 - **Chord support** - Play multiple notes simultaneously
+- **MIDI import/export** - Full interoperability with DAWs and music software
+- **AI pattern generation** - Create patterns using natural language prompts (OpenAI GPT)
 - **Preset library** - Rock, Hip-Hop, Techno, Acid House, and more
-- **Export patterns** - Download your compositions as markdown files
+- **Export patterns** - Download your compositions as markdown or MIDI files
 
 ## 🚀 Quick Start
 
 ```bash
 # Install dependencies
 npm install
+
+# Setup environment (for AI features)
+cp .env.example .env.local
+# Add your OpenAI API key to .env.local
 
 # Start development server
 npm run dev
@@ -178,14 +184,16 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 
 ## 🎯 Roadmap
 
-- [ ] MIDI file import/export
+- [x] MIDI file import/export
+- [x] AI pattern generation (OpenAI)
+- [x] Configurable drum synthesis
 - [ ] More effect types (reverb, distortion, chorus)
 - [ ] Swing/shuffle timing
 - [ ] Multi-pattern arrangements
 - [ ] LocalStorage persistence
 - [ ] Audio recording/WAV export
-- [ ] Velocity sensitivity
 - [ ] Pattern length controls
+- [ ] Server-side API proxy for secure key management
 
 ## 🙏 Acknowledgments
 

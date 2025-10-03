@@ -1,4 +1,4 @@
-import { SoundDefinition } from '../parser/types';
+import { SynthDefinition, SoundDefinition } from '../parser/types';
 
 // Note to frequency converter
 export const noteToFrequency = (note: string): number | null => {
@@ -41,8 +41,8 @@ export const parseNoteAtPosition = (
 
   // Check if it's a number (1-9)
   if (char >= '1' && char <= '9') {
-    // Map number to note (or chord) using sound definition
-    const mappedNote = soundDef?.notes?.[char];
+    // Map number to note (or chord) using sound definition (only for synth definitions)
+    const mappedNote = soundDef && soundDef.type !== 'drum' ? (soundDef as SynthDefinition).notes?.[char] : undefined;
     if (mappedNote) {
       return { note: mappedNote, length: 1 };
     }

@@ -1,9 +1,10 @@
-import { DrumType } from '../parser/types';
+import { DrumType, DrumDefinition, SoundDefinition } from '../parser/types';
 import { playKick, playSnare, playHiHat, playOpenHH, playClap } from './drums';
 
 export class AudioEngine {
   private audioContext: AudioContext;
   private gainNodes: Record<string, GainNode> = {};
+  private drumConfigs: Record<string, Partial<DrumDefinition>> = {};
 
   constructor() {
     this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -27,8 +28,21 @@ export class AudioEngine {
     return this.gainNodes[drumType];
   }
 
+  setDrumConfig(drumName: string, config: Partial<DrumDefinition>) {
+    this.drumConfigs[drumName] = config;
+  }
+
+  setSoundDefinitions(sounds: Record<string, SoundDefinition>) {
+    // Store drum configurations from sound definitions
+    Object.entries(sounds).forEach(([name, def]) => {
+      if (def.type === 'drum') {
+        this.drumConfigs[name] = def;
+      }
+    });
+  }
+
   playDrum(drumName: string, time: number, velocity: number) {
-    const drumSounds: Record<string, (ctx: AudioContext, gain: GainNode, time: number, velocity: number) => void> = {
+    const drumSounds: Record<string, (ctx: AudioContext, gain: GainNode, time: number, velocity: number, config?: Partial<DrumDefinition>) => void> = {
       'Kick': playKick,
       'Snare': playSnare,
       'HiHat': playHiHat,
@@ -40,7 +54,8 @@ export class AudioEngine {
     if (drumFunction) {
       const gain = this.gainNodes[drumName.toLowerCase()];
       if (gain) {
-        drumFunction(this.audioContext, gain, time, velocity);
+        const config = this.drumConfigs[drumName] || {};
+        drumFunction(this.audioContext, gain, time, velocity, config);
       }
     }
   }

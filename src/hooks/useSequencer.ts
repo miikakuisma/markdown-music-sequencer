@@ -46,6 +46,9 @@ export const useSequencer = (markdown: string) => {
       const engine = audioEngineRef.current;
       if (!engine) return;
 
+      // Update drum configurations from sound definitions
+      engine.setSoundDefinitions(sounds);
+
       const ctx = engine.getContext();
       const now = ctx.currentTime;
 
@@ -53,7 +56,7 @@ export const useSequencer = (markdown: string) => {
         const currentPos = step % track.pattern.length;
         const soundDef = sounds[track.name];
 
-        if (soundDef) {
+        if (soundDef && soundDef.type !== 'drum') {
           // Synth/Bass track with note data
           const { note } = parseNoteAtPosition(track.pattern, currentPos, soundDef);
 

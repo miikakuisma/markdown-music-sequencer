@@ -1,4 +1,4 @@
-import { SoundDefinition } from '../parser/types';
+import { SynthDefinition } from '../parser/types';
 
 // Synthesizer with ADSR envelope and filter
 export const playSynth = (
@@ -7,7 +7,7 @@ export const playSynth = (
   frequency: number,
   velocity: number,
   duration: number,
-  soundDef: SoundDefinition
+  soundDef: SynthDefinition
 ) => {
   const {
     waveform = 'sawtooth',

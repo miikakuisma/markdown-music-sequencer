@@ -1,4 +1,4 @@
-import { ParsedMarkdown, Metadata, SoundDefinition, Pattern } from './types';
+import { ParsedMarkdown, Metadata, SoundDefinition, SynthDefinition, Pattern } from './types';
 
 export const parseMarkdown = (md: string): ParsedMarkdown => {
   try {
@@ -37,23 +37,31 @@ export const parseMarkdown = (md: string): ParsedMarkdown => {
         if (line.match(/^\w+:$/) && !line.startsWith(' ')) {
           // New sound definition (no leading spaces, ends with :)
           currentSoundName = line.slice(0, -1).trim();
-          sounds[currentSoundName] = {};
+          sounds[currentSoundName] = {} as SoundDefinition;
         } else if (currentSoundName && line.startsWith('  ')) {
           // Sound property (indented with 2+ spaces)
           if (trimmed === 'notes:') {
-            // Start parsing note mappings
-            sounds[currentSoundName].notes = {};
-          } else if (sounds[currentSoundName].notes && trimmed.match(/^\d+:/)) {
-            // Parse note mapping like "1: c2"
-            const [num, note] = trimmed.split(':').map(s => s.trim());
-            if (num && note) {
-              sounds[currentSoundName].notes![num] = note;
-            }
+            // Start parsing note mappings (for synth sounds)
+            const synthDef = sounds[currentSoundName] as SynthDefinition;
+            synthDef.notes = {};
           } else if (trimmed.includes(':')) {
             const [key, value] = trimmed.split(':').map(s => s.trim());
+
             if (key && value) {
-              const numValue = parseFloat(value);
-              sounds[currentSoundName][key as keyof SoundDefinition] = isNaN(numValue) ? value as any : numValue as any;
+              const currentDef = sounds[currentSoundName];
+
+              // Check if this is a note mapping
+              if ((currentDef as SynthDefinition).notes && trimmed.match(/^\d+:/)) {
+                // Parse note mapping like "1: c2"
+                const [num, note] = trimmed.split(':').map(s => s.trim());
+                if (num && note) {
+                  (currentDef as SynthDefinition).notes![num] = note;
+                }
+              } else {
+                // Parse regular property
+                const numValue = parseFloat(value);
+                (currentDef as any)[key] = isNaN(numValue) ? value : numValue;
+              }
             }
           }
         }

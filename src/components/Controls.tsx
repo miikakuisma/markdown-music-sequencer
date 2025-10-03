@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, Download } from 'lucide-react';
+import { Play, Pause, Download, Upload, FileMusic } from 'lucide-react';
 import { presets } from '../presets/presets';
 import { parseMarkdown } from '../parser/markdownParser';
 
@@ -8,6 +8,8 @@ interface ControlsProps {
   onPlayPause: () => void;
   onDownload: () => void;
   onLoadPreset: (preset: string) => void;
+  onMidiImport: () => void;
+  onMidiExport: () => void;
 }
 
 // Helper to get preset display name from title in markdown
@@ -28,7 +30,9 @@ export const Controls: React.FC<ControlsProps> = ({
   isPlaying,
   onPlayPause,
   onDownload,
-  onLoadPreset
+  onLoadPreset,
+  onMidiImport,
+  onMidiExport
 }) => {
   const presetKeys = Object.keys(presets);
 
@@ -43,13 +47,31 @@ export const Controls: React.FC<ControlsProps> = ({
           {isPlaying ? 'Stop' : 'Play'}
         </button>
 
-        <button
-          onClick={onDownload}
-          className="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition ml-auto"
-        >
-          <Download className="w-5 h-5" />
-          Download
-        </button>
+        <div className="flex gap-2 ml-auto">
+          <button
+            onClick={onDownload}
+            className="flex items-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition"
+          >
+            <Download className="w-5 h-5" />
+            Markdown
+          </button>
+
+          <button
+            onClick={onMidiImport}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition"
+          >
+            <Upload className="w-5 h-5" />
+            Import MIDI
+          </button>
+
+          <button
+            onClick={onMidiExport}
+            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition"
+          >
+            <FileMusic className="w-5 h-5" />
+            Export MIDI
+          </button>
+        </div>
       </div>
 
       <div>

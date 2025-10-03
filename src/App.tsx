@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Music } from 'lucide-react';
 import { GridView } from './components/GridView';
 import { MarkdownEditor } from './components/MarkdownEditor';
 import { NotationGuide } from './components/NotationGuide';
 import { Controls } from './components/Controls';
+import { AIPrompt } from './components/AIPrompt';
 import { useSequencer } from './hooks/useSequencer';
 import { presets } from './presets/presets';
+import { midiToMarkdown, markdownToMidi } from './midi/midiConverter';
+import { generatePattern } from './ai/patternGenerator';
 
 const MarkdownMusicSequencer: React.FC = () => {
   const [markdown, setMarkdown] = useState(presets.pluckkeys);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { isPlaying, currentStep, play, stop } = useSequencer(markdown);
 
@@ -35,8 +39,66 @@ const MarkdownMusicSequencer: React.FC = () => {
     }
   };
 
+  const handleMidiImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const convertedMarkdown = midiToMarkdown(arrayBuffer);
+      setMarkdown(convertedMarkdown);
+    } catch (error) {
+      console.error('Error importing MIDI:', error);
+      alert('Failed to import MIDI file. Please check the file format.');
+    }
+
+    // Reset the input so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleMidiExport = () => {
+    try {
+      const midiData = markdownToMidi(markdown);
+      // Convert to regular Uint8Array for Blob compatibility
+      const uint8Array = new Uint8Array(midiData);
+      const blob = new Blob([uint8Array], { type: 'audio/midi' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pattern.mid';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting MIDI:', error);
+      alert('Failed to export MIDI file. Please check your pattern.');
+    }
+  };
+
+  const handleAIGenerate = async (prompt: string) => {
+    try {
+      const generated = await generatePattern(prompt, markdown);
+      setMarkdown(generated);
+    } catch (error) {
+      console.error('Error generating pattern:', error);
+      alert(`Failed to generate pattern: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4 sm:p-8">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept=".mid,.midi"
+        style={{ display: 'none' }}
+      />
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur-sm rounded-2xl shadow-2xl p-6 border border-purple-500/30">
@@ -71,6 +133,8 @@ const MarkdownMusicSequencer: React.FC = () => {
             onPlayPause={handlePlayPause}
             onDownload={downloadMarkdown}
             onLoadPreset={loadPreset}
+            onMidiImport={handleMidiImport}
+            onMidiExport={handleMidiExport}
           />
 
           <div className="mt-6">
@@ -87,6 +151,10 @@ const MarkdownMusicSequencer: React.FC = () => {
           <MarkdownEditor value={markdown} onChange={setMarkdown} />
           <NotationGuide />
         </div>
+
+        {/* AI Prompt */}
+        <AIPrompt onGenerate={handleAIGenerate} />
+
       </div>
     </div>
   );
